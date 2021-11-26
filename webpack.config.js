@@ -1,15 +1,14 @@
-const TerserPlugin = require('terser-webpack-plugin');
+const path = require('path');
 
 module.exports = {
   entry: './run.js',
+  mode: 'production',
+  target: 'node',
   output: {
-    filename: './dist/httpServer.min.js',
+    filename: 'httpServer.min.js',
+    path: path.resolve(__dirname, 'dist'),
   },
   optimization: {
-    minimizer: [
-      new TerserPlugin({
-        parallel: true,
-      }),
-    ],
+    minimize: true,
   },
 };
