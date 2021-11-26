@@ -7,9 +7,8 @@ module.exports = (app) => {
   app.route('/person', 'GET', (ctx) => {
     try {
       const persons = ctx.db.getAll();
-      ctx.res.setHeader('Content-Type', 'application/json');
-      ctx.res.write(JSON.stringify(persons));
-      ctx.res.end();
+      ctx.res.writeHead(200, { 'Content-Type': 'application/json' });
+      ctx.res.end(JSON.stringify(persons));
     } catch (e) {
       app.error(e);
     }
@@ -26,8 +25,7 @@ module.exports = (app) => {
       const person = ctx.db.get(uuid);
       if (person) {
         ctx.res.statusCode = 200;
-        ctx.res.write(JSON.stringify(person));
-        ctx.res.end();
+        ctx.res.end(JSON.stringify(person));
         return;
       }
       throw new HttpError(404, 'The record not found');
@@ -48,8 +46,7 @@ module.exports = (app) => {
       const person = ctx.db.add({ id: randomUUID(), name, age, hobbies });
       if (person) {
         ctx.res.statusCode = 201;
-        ctx.res.write(JSON.stringify(person));
-        ctx.res.end();
+        ctx.res.end(JSON.stringify(person));
         return;
       }
 
@@ -69,8 +66,7 @@ module.exports = (app) => {
       const { name, age, hobbies } = JSON.parse(ctx.body);
       if (ctx.db.update(uuid, { name, age, hobbies })) {
         ctx.res.statusCode = 200;
-        ctx.res.write(JSON.stringify(ctx.db.get(uuid)));
-        ctx.res.end();
+        ctx.res.end(JSON.stringify(ctx.db.get(uuid)));
         return;
       }
       throw new HttpError(404, 'The record not found');
@@ -89,8 +85,7 @@ module.exports = (app) => {
 
       if (ctx.db.delete(uuid)) {
         ctx.res.statusCode = 204;
-        ctx.res.write('Record is deleted');
-        ctx.res.end();
+        ctx.res.end('Record is deleted');
         return;
       }
       throw new HttpError(404, 'The record not found');
