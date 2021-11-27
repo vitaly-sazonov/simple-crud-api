@@ -53,7 +53,6 @@ describe('GREEN Test CRUD', () => {
 });
 
 describe('RED Test CRUD', () => {
-  let uuid = '';
   const body = { name: 'Vasya', age: '20', hobbies: "['walk','fight','drink']" };
 
   test('GET /person/:bad_uuid -> return {msg:"Bad uuid"} and statusCode 400', async () => {
@@ -75,6 +74,18 @@ describe('RED Test CRUD', () => {
       .post(`/person`)
       .set('Accept', 'application/json')
       .send({ name: 'Vasya', age: '20' });
+    expect(res.statusCode).toBe(400);
+    expect(res.body.msg).toBe(`Fields 'name', 'age' and 'hobby' must be specified`);
+  });
+
+  test(`PUT /person/ {name, age} "no required property" -> return {msg:"Fields 'name', 'age' and 'hobby' must be specified"} and statusCode 400`, async () => {
+    const {
+      body: { id },
+    } = await request.post('/person').set('Accept', 'application/json').send(body);
+    const res = await request
+      .put(`/person/${id}`)
+      .set('Accept', 'application/json')
+      .send({ name: 'Petya', age: '40' });
     expect(res.statusCode).toBe(400);
     expect(res.body.msg).toBe(`Fields 'name', 'age' and 'hobby' must be specified`);
   });

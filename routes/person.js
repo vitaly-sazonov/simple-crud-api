@@ -64,6 +64,11 @@ module.exports = (app) => {
         throw new HttpError(400, 'Bad uuid');
       }
       const { name, age, hobbies } = JSON.parse(ctx.body);
+
+      if (!name || !age || !hobbies) {
+        throw new HttpError(400, `Fields 'name', 'age' and 'hobby' must be specified`);
+      }
+
       if (ctx.db.update(uuid, { name, age, hobbies })) {
         ctx.res.statusCode = 200;
         ctx.res.end(JSON.stringify(ctx.db.get(uuid)));
