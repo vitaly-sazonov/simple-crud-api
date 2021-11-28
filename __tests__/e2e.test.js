@@ -82,12 +82,23 @@ describe('RED Test CRUD', () => {
     const {
       body: { id },
     } = await request.post('/person').set('Accept', 'application/json').send(body);
+    uuid = id;
+
     const res = await request
-      .put(`/person/${id}`)
+      .put(`/person/${uuid}`)
       .set('Accept', 'application/json')
       .send({ name: 'Petya', age: '40' });
     expect(res.statusCode).toBe(400);
     expect(res.body.msg).toBe(`Fields 'name', 'age' and 'hobby' must be specified`);
+  });
+
+  test(`PUT /person/ {incorrect json} -> return {msg:"Bad request"} and statusCode 400`, async () => {
+    const res = await request
+      .put(`/person/${uuid}`)
+      .set('Accept', 'application/json')
+      .send(`{ name:Vasya age: '20' }`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.msg).toBe(`Bad request`);
   });
 
   test('PUT /person/:bad_uuid -> return {msg:"Bad uuid"} and statusCode 400', async () => {
@@ -119,22 +130,13 @@ describe('RED Test CRUD', () => {
     expect(res.body.msg).toBe('The record not found');
   });
 
-  test(`POST /person/ {incorrect json} -> return {msg:"Internal server error"} and statusCode 500`, async () => {
+  test(`POST /person/ {incorrect json} -> return {msg:"Bad request"} and statusCode 400`, async () => {
     const res = await request
       .post(`/person`)
       .set('Accept', 'application/json')
       .send(`{ name:Vasya age: '20' }`);
-    expect(res.statusCode).toBe(500);
-    expect(res.body.msg).toBe(`Internal server error`);
-  });
-
-  test(`POST /person/ {incorrect json} -> return {msg:"Internal server error"} and statusCode 500`, async () => {
-    const res = await request
-      .post(`/person`)
-      .set('Accept', 'application/json')
-      .send(`{ name:Vasya age: '20' }`);
-    expect(res.statusCode).toBe(500);
-    expect(res.body.msg).toBe(`Internal server error`);
+    expect(res.statusCode).toBe(400);
+    expect(res.body.msg).toBe(`Bad request`);
   });
 
   test(`GET /person/path/to/param/ -> return {msg:"Not Found"} and statusCode 404`, async () => {

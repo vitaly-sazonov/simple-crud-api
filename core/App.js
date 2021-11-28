@@ -87,10 +87,16 @@ module.exports = class App {
 
   error(err) {
     console.error(err);
+
     if (!(err instanceof HttpError)) {
       this.ctx.res.setHeader('Content-Type', 'application/json');
       err.code = 500;
       err.message = 'Internal server error';
+    }
+
+    if (err instanceof SyntaxError) {
+      err.code = 400;
+      err.message = 'Bad request';
     }
 
     this.ctx.res.statusCode = err.code;
